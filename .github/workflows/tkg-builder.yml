@@ -2,12 +2,38 @@ name: Build Wine-tkg & Proton-tkg
 
 on:
   schedule:
-    - cron: '45 8,20 * * *'
+    - cron: '0 1 * * *' # Runs automatically every day at 1:00 AM UTC
   workflow_dispatch:
 
 jobs:
+  sync-upstream:
+    name: Sync with Upstream
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Fork
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Pull Upstream Changes
+        run: |
+          git remote add upstream https://github.com/Frogging-Family/wine-tkg-git.git
+          git fetch upstream master
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "bot@github.com"
+          git checkout master
+          git merge upstream/master --no-edit || true
+
+      - name: Push to Fork
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: master
+          repository: ${{ github.repository }}
+
   build-wine:
     name: Build Wine-tkg (Arch Container)
+    needs: sync-upstream
     runs-on: ubuntu-latest
     container: archlinux:latest
 
@@ -21,10 +47,10 @@ jobs:
           pacman -Syu --noconfirm base-devel sudo
           useradd user -G wheel && echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
           chown user -R . && cd wine-tkg-git
-
+          
           # Apply your valve-exp-bleeding Wayland flag fix here
           sed -i 's/_GE_WAYLAND="false"/_GE_WAYLAND="true"/g' wine-tkg-profiles/wine-tkg-valve-exp-bleeding.cfg
-
+          
           su user -c "yes|PKGDEST=/tmp/wine-tkg makepkg --noconfirm -s"
 
       - name: Archive Wine Artifacts
@@ -35,6 +61,7 @@ jobs:
 
   build-proton:
     name: Build Proton-tkg (Sniper/Ubuntu Container)
+    needs: sync-upstream
     runs-on: ubuntu-latest
 
     steps:
@@ -48,14 +75,14 @@ jobs:
       - name: Compile
         run: |
           cd proton-tkg
-          sed -i 's/uninstaller="false"/uninstaller="true"/' proton-tkg.cfg
-          sed -i 's/autoinstall="false"/autoinstall="true"/' proton-tkg.cfg
-          sed -i 's/_no_container="true"/_no_container="false"/' proton-tkg.sh
-          echo '_ci_build="true"' >> proton-tkg.cfg
-          touch tarplz
-          yes|./proton-tkg.sh
+          sed -i 's/uninstaller="false"/uninstaller="true"/' proton-tkg.cfg[cite: 2]
+          sed -i 's/autoinstall="false"/autoinstall="true"/' proton-tkg.cfg[cite: 2]
+          sed -i 's/_no_container="true"/_no_container="false"/' proton-tkg.sh[cite: 2]
+          echo '_ci_build="true"' >> proton-tkg.cfg[cite: 2]
+          touch tarplz[cite: 2]
+          yes|./proton-tkg.sh[cite: 2]
       - name: Archive Proton Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: proton-tkg-build
-          path: proton-tkg/built/*.tar
+          path: proton-tkg/built/*.tar[cite: 2]
