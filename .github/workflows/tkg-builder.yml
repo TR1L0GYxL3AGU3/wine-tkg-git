@@ -1,0 +1,80 @@
+name: Build Wine-tkg & Proton-tkg
+
+on:
+  workflow_dispatch: # Allows manual trigger anytime
+  # Alternatively, you can add a schedule or custom repository check if polling upstream
+
+jobs:
+  build-wine:
+    name: Build Wine-tkg-git
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y \
+            git make curl wget libasound2-dev:i386 libasound2-dev \
+            bison build-essential flex gettext-base fontforge \
+            libglib2.0-dev:i386 libglib2.0-dev libgstreamer-plugins-base1.0-dev:i386 \
+            libgstreamer-plugins-base1.0-dev libpcap-dev:i386 libpcap-dev \
+            libpulse-dev:i386 libpulse-dev libudev-dev:i386 libudev-dev \
+            libvulkan-dev:i386 libvulkan-dev libx11-dev:i386 libx11-dev \
+            libxml2-dev:i386 libxml2-dev mingw-w64 valgrind zlib1g-dev:i386 \
+            zlib1g-dev libncurses-dev:i386 libncurses-dev libxi-dev:i386 libxi-dev
+
+      - name: Fix Profile Defaults & Run Wine-tkg Build
+        working-directory: ./wine-tkg-git
+        run: |
+          # Patch the specific profile cfg to enable Wayland
+          sed -i 's/_GE_WAYLAND="false"/_GE_WAYLAND="true"/g' wine-tkg-profiles/wine-tkg-valve-exp-bleeding.cfg
+
+          # Ensure non-interactive mode is active
+          echo '_noint="true"' >> customization.cfg
+          ./non-makepkg-build.sh
+
+      - name: Upload Wine Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wine-tkg-git-output
+          path: wine-tkg-git/non-makepkg-builds/
+
+  build-proton:
+    name: Build Proton-tkg
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y \
+            git make curl wget libasound2-dev:i386 libasound2-dev \
+            bison build-essential flex gettext-base fontforge \
+            libglib2.0-dev:i386 libglib2.0-dev libgstreamer-plugins-base1.0-dev:i386 \
+            libgstreamer-plugins-base1.0-dev libpcap-dev:i386 libpcap-dev \
+            libpulse-dev:i386 libpulse-dev libudev-dev:i386 libudev-dev \
+            libvulkan-dev:i386 libvulkan-dev libx11-dev:i386 libx11-dev \
+            libxml2-dev:i386 libxml2-dev mingw-w64 valgrind zlib1g-dev:i386 \
+            zlib1g-dev libncurses-dev:i386 libncurses-dev libxi-dev:i386 libxi-dev
+
+      - name: Run Proton-tkg Build
+        working-directory: ./proton-tkg
+        run: |
+          echo '_noint="true"' >> proton-tkg.cfg
+          ./proton-tkg.sh
+
+      - name: Upload Proton Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: proton-tkg-output
+          path: proton-tkg/proton-tkg-git/
