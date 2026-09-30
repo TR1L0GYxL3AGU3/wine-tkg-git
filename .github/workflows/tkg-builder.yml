@@ -21,8 +21,8 @@ jobs:
           sudo apt-get install -y \
             git make curl wget libasound2-dev:i386 libasound2-dev \
             bison build-essential flex gettext-base fontforge \
-            libglib2.0-dev:i386 libglib2.0-dev libgstreamer-plugins-base1.0-dev:i386 \
-            libgstreamer-plugins-base1.0-dev libpcap-dev:i386 libpcap-dev \
+            libglib2.0-dev:i386 libglib2.0-dev libgstreamer-plugins-base1.0-dev \
+            libpcap-dev:i386 libpcap-dev \
             libpulse-dev:i386 libpulse-dev libudev-dev:i386 libudev-dev \
             libvulkan-dev:i386 libvulkan-dev libx11-dev:i386 libx11-dev \
             libxml2-dev:i386 libxml2-dev mingw-w64 valgrind zlib1g-dev:i386 \
@@ -60,8 +60,8 @@ jobs:
           sudo apt-get install -y \
             git make curl wget libasound2-dev:i386 libasound2-dev \
             bison build-essential flex gettext-base fontforge \
-            libglib2.0-dev:i386 libglib2.0-dev libgstreamer-plugins-base1.0-dev:i386 \
-            libgstreamer-plugins-base1.0-dev libpcap-dev:i386 libpcap-dev \
+            libglib2.0-dev:i386 libglib2.0-dev libgstreamer-plugins-base1.0-dev \
+            libpcap-dev:i386 libpcap-dev \
             libpulse-dev:i386 libpulse-dev libudev-dev:i386 libudev-dev \
             libvulkan-dev:i386 libvulkan-dev libx11-dev:i386 libx11-dev \
             libxml2-dev:i386 libxml2-dev mingw-w64 valgrind zlib1g-dev:i386 \
