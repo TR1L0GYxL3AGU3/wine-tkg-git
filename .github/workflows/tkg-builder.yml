@@ -22,7 +22,7 @@ jobs:
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "bot@github.com"
           git checkout master
-          git merge upstream/master --no-edit || true
+          git merge upstream/master --allow-unrelated-histories --no-edit || true
 
       - name: Push to Fork
         uses: ad-m/github-push-action@master
