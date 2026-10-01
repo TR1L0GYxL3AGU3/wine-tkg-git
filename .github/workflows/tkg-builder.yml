@@ -2,7 +2,7 @@ name: Build Wine-tkg & Proton-tkg
 
 on:
   schedule:
-    - cron: '0 5,17 * * *' # Runs at midnight (5:00 UTC) and noon (17:00 UTC) CDT
+    - cron: '0 5,17 * * *' # Runs at midnight (5:00 UTC) and noon (17:00 UTC) CT
   workflow_dispatch:
 
 jobs:
@@ -84,4 +84,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: proton-tkg-build
-          path: proton-tkg/built/*.tar[cite: 2]
+          path: proton-tkg/built/*.tar
