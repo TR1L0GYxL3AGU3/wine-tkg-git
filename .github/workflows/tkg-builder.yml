@@ -76,6 +76,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwayland-dev:amd64 libwayland-dev:i386 wayland-protocols libxkbcommon-dev:amd64 libxkbcommon-dev:i386
           sed -i 's/_GE_WAYLAND="false"/_GE_WAYLAND="true"/g' wine-tkg-git/wine-tkg-profiles/wine-tkg-valve-exp-bleeding.cfg
+          cd proton-tkg
           sed -i 's/uninstaller="false"/uninstaller="true"/' proton-tkg.cfg
           sed -i 's/autoinstall="false"/autoinstall="true"/' proton-tkg.cfg
           sed -i 's/_no_container="true"/_no_container="false"/' proton-tkg.sh
