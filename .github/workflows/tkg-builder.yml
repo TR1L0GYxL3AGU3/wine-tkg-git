@@ -47,10 +47,6 @@ jobs:
           pacman -Syu --noconfirm base-devel sudo
           useradd user -G wheel && echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
           chown user -R . && cd wine-tkg-git
-          
-          # Apply your valve-exp-bleeding Wayland flag fix here
-          sed -i 's/_GE_WAYLAND="false"/_GE_WAYLAND="true"/g' wine-tkg-profiles/wine-tkg-valve-exp-bleeding.cfg
-          
           su user -c "yes|PKGDEST=/tmp/wine-tkg makepkg --noconfirm -s"
 
       - name: Archive Wine Artifacts
@@ -74,13 +70,14 @@ jobs:
       - uses: actions/checkout@v4
       - name: Compile
         run: |
+          sed -i 's/_GE_WAYLAND="false"/_GE_WAYLAND="true"/g' wine-tkg-git/wine-tkg-profiles/wine-tkg-valve-exp-bleeding.cfg
           cd proton-tkg
-          sed -i 's/uninstaller="false"/uninstaller="true"/' proton-tkg.cfg[cite: 2]
-          sed -i 's/autoinstall="false"/autoinstall="true"/' proton-tkg.cfg[cite: 2]
-          sed -i 's/_no_container="true"/_no_container="false"/' proton-tkg.sh[cite: 2]
-          echo '_ci_build="true"' >> proton-tkg.cfg[cite: 2]
-          touch tarplz[cite: 2]
-          yes|./proton-tkg.sh[cite: 2]
+          sed -i 's/uninstaller="false"/uninstaller="true"/' proton-tkg.cfg
+          sed -i 's/autoinstall="false"/autoinstall="true"/' proton-tkg.cfg
+          sed -i 's/_no_container="true"/_no_container="false"/' proton-tkg.sh
+          echo '_ci_build="true"' >> proton-tkg.cfg
+          touch tarplz
+          yes|./proton-tkg.sh
       - name: Archive Proton Artifacts
         uses: actions/upload-artifact@v4
         with:
