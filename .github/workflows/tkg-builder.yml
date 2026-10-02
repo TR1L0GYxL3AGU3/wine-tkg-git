@@ -71,15 +71,11 @@ jobs:
           safe-packages: "patch,git"
       - uses: actions/checkout@v4
       - name: Compile
+        env:
+          MYSCRIPTS: ${{ github.workspace }}/myscripts
         run: |
-          cat > /tmp/wl-image.sh <<'EOF'
-          set -e
-          img=$(grep -m1 'STEAMRT_IMAGE ?= registry' Makefile.in | sed 's/.*?= *//')
-          docker pull "$img"
-          printf 'FROM %s\nUSER root\nRUN apt-get update && apt-get install -y libwayland-dev libwayland-egl-backend-dev wayland-protocols libxkbcommon-dev libxkbregistry-dev libwayland-dev:i386 libxkbcommon-dev:i386 libxkbregistry-dev:i386\n' "$img" | docker build -t tkg-sdk-wl -
-          sed -i '0,/STEAMRT_IMAGE ?= registry.*/s||STEAMRT_IMAGE ?= tkg-sdk-wl|' Makefile.in
-          EOF
-          sed -i '/--enable-werror/a\  bash /tmp/wl-image.sh' proton-tkg/proton-tkg.sh
+          sed -i '/--enable-werror/a\  bash "$MYSCRIPTS/wl-image.sh"' proton-tkg/proton-tkg.sh
+          sed -i '/cp "proton_template\/conf\/compatibilitytool.vdf"/a\      python3 "$MYSCRIPTS/wl-proton.py" "proton_tkg_$_protontkg_version/proton"' proton-tkg/proton-tkg.sh
           sed -i 's/_GE_WAYLAND="false"/_GE_WAYLAND="true"/g' wine-tkg-git/wine-tkg-profiles/wine-tkg-valve-exp-bleeding.cfg
           cd proton-tkg
           sed -i 's/uninstaller="false"/uninstaller="true"/' proton-tkg.cfg
