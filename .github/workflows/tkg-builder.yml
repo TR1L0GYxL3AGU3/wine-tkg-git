@@ -64,12 +64,6 @@ jobs:
     container: archlinux:latest
 
     steps:
-      - name: Free Disk Space
-        uses: LizardByte/actions/actions/more_space@master
-        with:
-          analyze-space-savings: true
-          clean-all: true
-          safe-packages: "patch,git"
       - uses: actions/checkout@v4
       - name: Compile
         run: |
